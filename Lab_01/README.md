@@ -28,7 +28,7 @@ The goals of this lab are to:
 
 ---
 
-## Part 1a
+##  Part 1a
 
 ### This part defines a function that takes an integer input and returns twice the square of that number. The function is reusable and separates the calculation logic from the rest of the program, which follows good C programming practice.
 ```C
@@ -42,7 +42,7 @@ int twice_square(int x)
 
 ```
 
-## Part 1b
+##  Part 1b
 
 ### In this part, the function from Part 1(a) is used to calculate twice the square of all integers from 0 to 511. Each result is stored in an array, demonstrating the use of loops and arrays for bulk data processing.
 

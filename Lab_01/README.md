@@ -71,6 +71,7 @@ void part1b(void)
 #include <math.h>
 
 #define SIZE_2 361
+#define PI 3.14159265358979323846
 
 double cos_values[SIZE_2];
 
@@ -78,10 +79,11 @@ void part2(void)
 {
     for (int deg = 0; deg <= 360; deg++)
     {
-        double rad = deg * (M_PI / 180.0);
+        double rad = deg * (PI / 180.0);
         cos_values[deg] = cos(rad);
     }
 }
+
 
 ```
 
@@ -90,6 +92,8 @@ void part2(void)
 ### Here, a global array of 50 integers is searched to find the second largest value. The result is stored in the memory location immediately following the array, demonstrating array traversal, comparison logic, and careful memory placement.
 
 ``` C
+
+#include <limits.h>
 
 #define SIZE_3 50
 
@@ -104,7 +108,7 @@ int arr_part3[SIZE_3 + 1] = {
 void part3(void)
 {
     int max = arr_part3[0];
-    int second_max = -2147483648;
+    int second_max = INT_MIN;
 
     for (int i = 1; i < SIZE_3; i++)
     {
@@ -123,6 +127,7 @@ void part3(void)
 
     arr_part3[SIZE_3] = second_max;
 }
+
 
 ```
 
@@ -242,19 +247,33 @@ void part6_sequence_once(void)
 
 #define BUTTON_SEQ 2
 
+int pressed_edge(int pin)
+{
+    static int last_state = LOW;
+    int now = digitalRead(pin);
+
+    int edge = (now == HIGH && last_state == LOW);
+    last_state = now;
+
+    if (edge) delay(25);
+    return edge;
+}
+
 void part6b(void)
 {
     static int running = 0;
 
-    if (digitalRead(BUTTON_SEQ) == HIGH)
+    if (pressed_edge(BUTTON_SEQ))
     {
-        delay(200);
         running = !running;
     }
 
     if (running)
+    {
         part6_sequence_once();
+    }
 }
+
 ```
 
 ## Part 7a
@@ -275,13 +294,31 @@ int C[SIZE_7];
 ### When the button is pressed once, the program selects the addition operation. The red LED turns on to indicate that addition mode is active.
 
 ```C
-int operation = 0;
+#define BUTTON_MODE 3
 
-void select_add(void)
+int press_count = 0;
+
+void show_mode_led(void)
 {
-    operation = 1;
-    digitalWrite(RED_LED, HIGH);
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(GREEN_LED, LOW);
+    digitalWrite(BLUE_LED, LOW);
+
+    if (press_count == 1) digitalWrite(RED_LED, HIGH);
+    else if (press_count == 2) digitalWrite(GREEN_LED, HIGH);
+    else if (press_count == 3) digitalWrite(BLUE_LED, HIGH);
 }
+
+void part7b(void)
+{
+    if (pressed_edge(BUTTON_MODE))
+    {
+        press_count++;
+        if (press_count > 3) press_count = 1;
+        show_mode_led();
+    }
+}
+
 ```
 
 ## Part 7c
@@ -291,11 +328,11 @@ void select_add(void)
 ```C
 
 
-void select_sub(void)
+void part7c(void)
 {
-    operation = 2;
-    digitalWrite(GREEN_LED, HIGH);
+    show_mode_led();
 }
+
 ```
 
 ## Part 7d
@@ -304,11 +341,11 @@ void select_sub(void)
 
 ```C
 
-void select_mul(void)
+void part7d(void)
 {
-    operation = 3;
-    digitalWrite(BLUE_LED, HIGH);
+    show_mode_led();
 }
+
 ```
 
 ## Part 7e
@@ -316,6 +353,8 @@ void select_mul(void)
 ### When a second button is pressed, the selected arithmetic operation is applied element-by-element to the first two arrays. The results are stored in the third array. All LEDs turn off during computation, and once all results are saved, all LEDs turn on to signal completion.
 
 ```C
+
+#define BUTTON_EXEC 4
 
 void leds_off(void)
 {
@@ -337,13 +376,25 @@ void execute_operation(void)
 
     for (int i = 0; i < SIZE_7; i++)
     {
-        if (operation == 1) C[i] = A[i] + B[i];
-        else if (operation == 2) C[i] = A[i] - B[i];
-        else if (operation == 3) C[i] = A[i] * B[i];
+        if (press_count == 1) C[i] = A[i] + B[i];
+        else if (press_count == 2) C[i] = A[i] - B[i];
+        else if (press_count == 3) C[i] = A[i] * B[i];
         else C[i] = 0;
     }
 
     leds_all_on();
 }
+
+void part7e(void)
+{
+    if (pressed_edge(BUTTON_EXEC))
+    {
+        execute_operation();
+    }
+}
+
 ```
+## Conclusion 
+
+This lab demonstrated core C programming concepts applied to a microprocessor-based environment. Through the use of functions, arrays, loops, and global variables, each task followed the lab specifications and reinforced structured problem-solving. Basic interaction with hardware components such as RGB LEDs and push buttons was also implemented, providing practical experience with embedded system logic and control.
 

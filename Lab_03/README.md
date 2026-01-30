@@ -1,5 +1,6 @@
 ## ENCE 3210 – Lab 3
 ### Timers, Interrupts, and Concurrent Tasks on Arduino
+### Microprocessor systems I
 
 ### The objective is to demonstrate the use of hardware timers, interrupt service routines (ISRs), GPIO, and volatile variables to run multiple tasks concurrently on an embedded system
 
@@ -174,8 +175,25 @@ void loop() {
     Serial.println("Lab 3 running: 3 seconds elapsed");
   }
 }
+
+
+
 ```
-### Demonstartion of working code 
 
 
+## Block Diagram 
+<p align="center">
+  <img src="https://github.com/AMB0000/Microprocessor-systems/blob/16907b8c088d7926155f0c58860f038e42278cce/Lab_03/airdrop%20img%20iPad%20Pro.png"
+  width="600"
+</p>
+     
+## Demonstartion of working code 
 
+<p align="center">
+  <img src="https://github.com/AMB0000/Microprocessor-systems/blob/1ef6bb66ae57c9df12334b73ce203405cdd31096/Lab_03/LAB3-ezgif.com-video-to-gif-converter%20(1).gif"
+       width="400"
+       alt="Lab 3 Demo – Timer Interrupts and GPIO">
+</p>
+
+
+(ChatGPT was *ONLY* used to help with code comments to help readers understand.)

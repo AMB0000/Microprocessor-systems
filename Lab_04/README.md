@@ -1,4 +1,6 @@
 ## Lab 4: Microprocessors 1
+## Ali Behbehani
+## Febuary 27 2026
 
 ### Question 1: 14-bit SAR ADC Simulation Results
 
@@ -89,7 +91,7 @@ void loop() {
 ## Question 2: Solar Charge Controller System Design
 
 ### Project Overview
-This task involved designing the control logic for a Solar Charge Controller. The system manages power distribution between a solar panel and a battery to maintain the operation of a microcontroller (MCU). Due to hardware limitations, the system state is visualized through real-time Serial Monitor feedback.
+This task involved designing the control logic for a Solar Charge Controller. The system manages power distribution between a solar panel and a battery to maintain the operation of a microcontroller.
 
 ### System Logic & Requirements
 The controller operates based on the following prioritized logic gates:
@@ -99,7 +101,6 @@ The controller operates based on the following prioritized logic gates:
 - Status Monitoring: All transitions and charging states are output to the Serial Monitor for verification.
 
 ### Block Diagram
-The software architecture follows a modular design, separating analog data acquisition from the decision-making logic.
 
 <p align="center">
   <img src="https://github.com/AMB0000/Microprocessor-systems/blob/d10fdbfddf546eded00795de633420597910b0d3/Lab_04/Pictures/IMG_0453.jpeg?raw=true" width="500">
@@ -115,9 +116,6 @@ The software architecture follows a modular design, separating analog data acqui
 | Critical Power | 0.80 V | 0.20 V | BATTERY | ACTIVE |
 | Threshold Limit | 2.51 V | 2.10 V | SOLAR | ACTIVE |
 
-#### Logic Validation Criteria:
-- Power Source Selection: The system correctly toggles to SOLAR whenever Vsolar > 2.5V; otherwise, it defaults to BATTERY.
-- Charging Activation: Charging logic is only engaged when Vsolar > Vbatt, ensuring power only flows toward the lower potential.
 
 ### Code
 
@@ -170,7 +168,7 @@ This task addresses the major limitation identified in Question 2. In the previo
 ### Block Diagram
 
 <p align="center">
-  <img src="" width="500" title="Q3 State Machine Diagram">
+  <img src="https://github.com/AMB0000/Microprocessor-systems/blob/853bc1c3e8655dd66649e84973018b3380a31ca1/Lab_04/Pictures/blckdiagnmq3.jpg" width="500" title="Q3 State Machine Diagram">
 </p>
 
 
@@ -249,4 +247,8 @@ void loop() {
 
   delay(1000); // Sample every 1 second
 }
+
+```
+
+## Question 4 
 

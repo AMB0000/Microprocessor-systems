@@ -29,21 +29,6 @@ The current DemoSat system is organized into five functional subsystems: **Power
 
 ![DemoSat System Block Diagram](DemoSat_Block_Diagram.png)
 
-### 2.3 Signal & Data Flow
-
-| Connection | Protocol | Arduino Pins |
-|---|---|---|
-| HIH6130 → MCU | I²C | A4 (SDA), A5 (SCL) |
-| MPL3115A2 → MCU | I²C (shared bus) | A4 (SDA), A5 (SCL) |
-| MMA8452Q → MCU | I²C (shared bus) | A4 (SDA), A5 (SCL) |
-| DS18B20 → MCU | 1-Wire | D6 |
-| MCU → OpenLog | UART | D0 (TX), D1 (RX) |
-| OpenLog → SD Card | SPI | Internal to OpenLog |
-| MCU → LEDs (×6) | GPIO | D2–D7 |
-| MCU ↔ PC | UART via USB | D0/D1 |
-
-> All I²C sensors share the SDA/SCL bus (A4/A5). Each device has a unique I²C address, so no address conflicts occur. The DS18B20 uses the 1-Wire protocol on a dedicated digital pin.
-
 ---
 
 ## 3. Component Identification

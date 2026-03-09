@@ -27,7 +27,7 @@ The current DemoSat system is organized into five functional subsystems: **Power
 
 ### 2.2 Block Diagram
 
-![DemoSat System Block Diagram](DemoSat_Block_Diagram.png)
+![DemoSat System Block Diagram](https://github.com/AMB0000/Microprocessor-systems/blob/5559a99dc1355a7c41e5c876dde68455c18d4cff/Phase_1/Images/Screenshot%202026-03-09%20141327.png)
 
 ---
 

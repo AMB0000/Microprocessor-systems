@@ -3,8 +3,7 @@
 ## Purpose of Prototyping
 
 Before manufacturing the PCB, it is important to test the circuit design using a temporary setup. This helps detect errors early and reduces cost.
-## Prototype Implementation
-![Prototype Setup](../images/prototype.jpg)
+
 ## Prototype Setup
 
 The circuit was assembled on a prototype board using:

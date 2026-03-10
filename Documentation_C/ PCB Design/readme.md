@@ -32,8 +32,4 @@ The PCB was optimized to:
 ## PCB Bottom Layer
 ![PCB Bottom](../images/pcb_bottom.jpg)
 
-## PCB Routing Layout
-![PCB Routing](../images/pcb_routing.jpg)
 
-## PCB Solder Side
-![PCB Solder](../images/solder_side.jpg)

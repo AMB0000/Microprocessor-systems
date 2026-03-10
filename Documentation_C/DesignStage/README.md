@@ -8,8 +8,7 @@ A block diagram was created to visualize how signals move through the system. Th
 ## System Block Diagram
 ![Block Diagram](../images/block_diagram.jpg)
 
-## Preliminary Schematic
-![Schematic](../images/schematic.jpg)
+
 ## Component Selection
 
 Each component was selected based on functionality and compatibility:

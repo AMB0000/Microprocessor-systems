@@ -1,6 +1,6 @@
 # Introduction
-## System Overview
-![System Overview](../images/board_angle.png)
+
+
 ##  Introduction
 In this project, I designed and built a Digital Signal Processing (DSP) shield for the Arduino Uno as part of my microprocessors course. The goal was to go through the full engineering process — from learning the theory, to designing the hardware, manufacturing it, assembling it, and finally testing it with real code and lab equipment.
 

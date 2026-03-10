@@ -5,7 +5,11 @@
 The design stage is the most important part of the project because it defines how the entire system will function. During this phase, all hardware components and their interactions were carefully planned.
 
 A block diagram was created to visualize how signals move through the system. The microprocessor was selected as the central controller responsible for handling all operations.
+## System Block Diagram
+![Block Diagram](../images/block_diagram.jpg)
 
+## Preliminary Schematic
+![Schematic](../images/schematic.jpg)
 ## Component Selection
 
 Each component was selected based on functionality and compatibility:

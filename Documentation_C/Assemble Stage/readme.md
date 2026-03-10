@@ -26,5 +26,8 @@ Each component was checked for:
 • Stable mounting  
 
 ## Final Assembled Board
+## Assembled Board (Top View)
+![Board Top](../images/board_top.jpg)
 
-![Assembled Board](../images/board_top.jpg)
+## Assembled Board (Angled View)
+![Board Angle](../images/board_angle.png)

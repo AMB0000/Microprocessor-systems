@@ -30,4 +30,5 @@ Each component was checked for:
 ![Board Top](../images/board_top.jpg)
 
 ## Assembled Board (Angled View)
-![Board Angle](../images/board_angle.png)
+![Board Angle](../images/board_angle.jpg)
+

@@ -26,10 +26,14 @@ The PCB was optimized to:
 • Maintain compact board size  
 • Simplify assembly process  
 
-## PCB Views
-
-### Top View
+## PCB Top Layer
 ![PCB Top](../images/pcb_top.jpg)
 
-### Bottom View
+## PCB Bottom Layer
 ![PCB Bottom](../images/pcb_bottom.jpg)
+
+## PCB Routing Layout
+![PCB Routing](../images/pcb_routing.jpg)
+
+## PCB Solder Side
+![PCB Solder](../images/solder_side.jpg)

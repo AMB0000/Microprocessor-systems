@@ -6,453 +6,268 @@
 
 ## 1. Overview
 
-In Phase 1, I identified that three of the four core sensors in the original DemoSat kit are discontinued, and the data logger has been replaced by a newer incompatible variant. The goal of Phase 2 is to design a fully functional replacement system that:
+In Phase 1, I found that three of the four sensors in the original DemoSat kit are no longer available to buy. Phase 2 is my replacement design that:
 
-- Replaces all unavailable components with in-production alternatives
-- Maintains identical functionality to the original kit
-- Stays within the **$147 budget** and **200 g weight limit**
-- Reduces power consumption where possible
-- Uses a custom PCB to replace the original shield
+- Uses parts that are still being made and sold
+- Does the same job as the original kit
+- Stays under the $147 budget and 200g weight limit
+- Uses less power than the original
+- Uses a custom PCB instead of the original shield
 
-### Discontinued Parts from Phase 1
+### Parts That Need to Be Replaced
 
-| Original Part | Function | Status |
+| Original Part | What It Does | Status |
 |---|---|---|
-| HIH6130 (Honeywell) | Internal humidity + temperature | 🔴 Discontinued |
-| MPL3115A2 (NXP) | Barometric pressure + altitude | 🔴 End-of-life |
-| MMA8452Q (NXP) | 3-axis accelerometer | 🔴 End-of-life |
-| OpenLog DEV-13712 (SparkFun) | UART data logger | 🟡 Replaced by incompatible variant |
-| DS18B20 (external temp) | External temperature | 🟢 Keep — still available |
-| Arduino Uno | Microcontroller | 🟢 Keep — still available |
+| HIH6130 | Humidity + temperature | Discontinued |
+| MPL3115A2 | Pressure + altitude | Discontinued |
+| MMA8452Q | Accelerometer | Discontinued |
+| OpenLog DEV-13712 | Data logger | Replaced by incompatible version |
+| DS18B20 | External temperature | Still available |
+| Arduino Uno | Main controller | Still available |
 
 ---
 
-## 2. Design Philosophy
+## 2. My Replacement Choices
 
-The key insight driving my replacement strategy is sensor consolidation. The **BME280** is a single, widely available, low-cost sensor that simultaneously measures humidity, barometric pressure, and temperature — replacing both the HIH6130 and MPL3115A2 in one chip. This reduces part count, cost, PCB footprint, and weight all at once.
+I replaced each discontinued part with something that works the same way and is still being made.
 
-For the accelerometer, I selected the **ADXL345** — a direct functional replacement for the MMA8452Q, using the same I2C interface with excellent Arduino library support.
-
-For data logging, I replaced the OpenLog with a simple **MicroSD SPI module**, which is lighter, cheaper, more reliable, and does not depend on a specific firmware version.
-
-| Original Part | Replaced By | Reason |
+| Original Part | My Replacement | Why |
 |---|---|---|
-| HIH6130 (humidity + temp) | **BME280** | Single chip replaces two sensors |
-| MPL3115A2 (pressure) | **BME280** | Consolidated into same chip |
-| MMA8452Q (accelerometer) | **ADXL345** | Same I2C interface, widely available |
-| OpenLog DEV-13712 | **MicroSD SPI module** | Simpler, lighter, no firmware dependency |
-| DS18B20 | **DS18B20** | Unchanged — still available |
-| Arduino Uno | **Arduino Uno** | Unchanged |
+| HIH6130 | HIH-9120-021-001 | Same I2C interface, better accuracy |
+| MPL3115A2 | DPS310 | I2C, very low power, compact |
+| MMA8452Q | ADXL345 | Same I2C interface, more range |
+| OpenLog DEV-13712 | OpenLog DEV-13712 | Re-sourced original compatible version |
+| DS18B20 | DS18B20 | Unchanged |
+| Arduino Uno | Arduino Uno R3 | Unchanged |
 
 ---
 
-## 3. Component Selection
+## 3. Component Details
 
-### BME280 — Humidity, Pressure & Internal Temperature
-- **Replaces:** HIH6130 + MPL3115A2
-- **Source:** Adafruit #2652
-- **Interface:** I2C (address 0x76)
-- **Specs:** Humidity ±3%, Pressure ±1 hPa, Temperature ±1°C
-- **Why:** In production, excellent `Adafruit_BME280` library support, lower power than both sensors it replaces combined
-- **Cost:** $14.95 | **Weight:** ~2 g
+### HIH-9120-021-001 — Humidity + Temperature
+- Replaces: HIH6130
+- Where to buy: Digi-Key
+- Interface: I2C (address 0x27)
+- Accuracy: ±1.7% humidity, ±0.5°C temperature
+- Runs on 3.3V
+- Cost: $12.00 | Weight: ~2g
+
+### DPS310 — Barometric Pressure
+- Replaces: MPL3115A2
+- Where to buy: Adafruit #4494
+- Interface: I2C (address 0x77)
+- Pressure range: 300–1200 hPa
+- Very low power: ~1.7µA
+- Cost: $6.95 | Weight: ~2g
 
 ### ADXL345 — 3-Axis Accelerometer
-- **Replaces:** MMA8452Q
-- **Source:** Adafruit #1231 or SparkFun SEN-09836
-- **Interface:** I2C (address 0x53)
-- **Specs:** ±2g / ±4g / ±8g / ±16g selectable range, 13-bit resolution
-- **Why:** Pin and software compatible with I2C, widely available, excellent library support, lower power than MMA8452Q
-- **Cost:** $9.95 | **Weight:** ~2 g
+- Replaces: MMA8452Q
+- Where to buy: Adafruit #1231
+- Interface: I2C (address 0x53)
+- Range: ±2g to ±16g, 13-bit resolution
+- Power: ~140µA @ 3.3V
+- Cost: $9.95 | Weight: ~2g
 
-### MicroSD SPI Module — Data Storage
-- **Replaces:** OpenLog DEV-13712
-- **Source:** Amazon / SparkFun
-- **Interface:** SPI
-- **Why:** No firmware dependency, lighter than OpenLog, logs CSV data directly via Arduino SD library (built-in), widely available
-- **Cost:** $5.99 | **Weight:** ~4 g
+### OpenLog DEV-13712 — Data Logger
+- Replaces: incompatible OpenLog variant
+- Where to buy: SparkFun
+- Interface: UART (TX → D1)
+- Logs all Serial data directly to microSD card
+- Cost: $24.95 | Weight: ~10g
 
-### Retained Components
+### Parts I Kept
 
-| Component | Reason Kept |
+| Part | Reason |
 |---|---|
-| Arduino Uno | Meets all I/O requirements, familiar platform |
-| DS18B20 (waterproof probe) | Still in production, performs well |
-| 6× LEDs + 330Ω resistors | No change needed |
-| 9V battery (×1) | Sufficient for flight duration — see power analysis |
-| Rocker switch + barrel connector | No change needed |
-
-> **Battery note:** My Phase 1 design used two 9V batteries (90 g). In Phase 2 I reduced to one 9V battery (45 g), saving 45 g of weight while still providing over 5 hours of runtime — well above the 3–4 hour flight window.
+| Arduino Uno | Still works, no reason to change |
+| DS18B20 waterproof probe | Still available |
+| 4x LEDs + 330Ω resistors | No change needed |
+| 2x 9V battery | Enough power for the flight |
+| Rocker switch + barrel jack | No change needed |
 
 ---
 
-## 4. System Architecture
+## 4. How the System Works
 
-### 4.1 Block Diagram
+### Block Diagram
 ```
-                        ┌─────────────────────┐
-                        │     9V Battery      │
-                        │   (Alkaline, 1×)    │
-                        └──────────┬──────────┘
-                                   │ VIN (via rocker switch)
-                        ┌──────────▼──────────┐
-                        │     Arduino Uno      │
-                        │  ATmega328P @ 16MHz  │
-                        │                      │
-                        │  I2C:  A4(SDA)/A5(SCL)│
-                        │  1-Wire: D6          │
-                        │  SPI:  D10–D13       │
-                        │  GPIO: D2–D7 (LEDs)  │
-                        └──┬───────────────┬───┘
-                           │               │
-               ────────────┤               ├────────────
-              I2C Bus (SDA/SCL)         SPI Bus
-                           │               │
-          ┌────────────────┤         ┌─────┴──────────┐
-          │                │         │  MicroSD Module │
-    ┌─────▼──────┐  ┌──────▼──────┐  │  Data logging  │
-    │   BME280   │  │   ADXL345   │  │  CS → D10      │
-    │            │  │             │  └────────────────┘
-    │ Humidity   │  │ Accel X/Y/Z │
-    │ Pressure   │  │ ±2g–±16g    │
-    │ Int. Temp  │  │ I2C: 0x53   │
-    │ I2C: 0x76  │  └─────────────┘
-    └────────────┘
+                    ┌──────────────┐
+                    │  9V Battery  │
+                    │     x2       │
+                    └──────┬───────┘
+                           │ VIN (through switch)
+                    ┌──────▼───────┐
+                    │  Arduino Uno │
+                    │              │
+                    │  I2C: A4/A5  │
+                    │  1-Wire: D6  │
+                    │  UART: D1    │
+                    │  GPIO: D2-D5 │
+                    └──┬────────┬──┘
+                       │        │
+              I2C Bus  │        │  UART
+                       │        │
+         ┌─────────────┤    ┌───▼──────┐
+         │             │    │ OpenLog  │
+   ┌─────▼───┐  ┌──────▼─┐  │ DEV-13712│
+   │HIH-9120 │  │ DPS310 │  └──────────┘
+   │0x27     │  │ 0x77   │
+   └─────────┘  └────────┘
+   ┌─────────┐
+   │ ADXL345 │
+   │ 0x53    │
+   └─────────┘
 
-         1-Wire (D6)
-              │
-    ┌─────────▼──────────┐
-    │      DS18B20       │
-    │  External Temp     │
-    │  Waterproof probe  │
-    └────────────────────┘
+      1-Wire (D6)
+           │
+    ┌──────▼──────┐
+    │   DS18B20   │
+    │  Ext. Temp  │
+    └─────────────┘
 
-         GPIO (D2–D7)
-              │
-    ┌─────────▼──────────┐
-    │   6× LED Indicators│
-    │   330Ω current lim │
-    └────────────────────┘
+      GPIO (D2-D5)
+           │
+    ┌──────▼──────┐
+    │  4x LEDs    │
+    │  330Ω each  │
+    └─────────────┘
 ```
 
-### 4.2 Pin Assignment Table
+### Pin Map
 
 | Arduino Pin | Connected To | Protocol |
 |---|---|---|
-| A4 (SDA) | BME280 SDA, ADXL345 SDA | I2C |
-| A5 (SCL) | BME280 SCL, ADXL345 SCL | I2C |
+| A4 (SDA) | HIH-9120, DPS310, ADXL345 | I2C |
+| A5 (SCL) | HIH-9120, DPS310, ADXL345 | I2C |
+| D1 (TX) | OpenLog RXI | UART |
 | D6 | DS18B20 data | 1-Wire |
-| D10 | MicroSD CS | SPI |
-| D11 (MOSI) | MicroSD MOSI | SPI |
-| D12 (MISO) | MicroSD MISO | SPI |
-| D13 (SCK) | MicroSD SCK | SPI |
-| D2–D7 | LEDs (×6) via 330Ω | GPIO |
+| D2–D5 | LEDs x4 via 330Ω | GPIO |
 
-### 4.3 I2C Address Map
+### I2C Addresses
 
-| Device | I2C Address | Notes |
-|---|---|---|
-| BME280 | 0x76 | SDO pin to GND |
-| ADXL345 | 0x53 | SDO/ALT pin to GND |
+| Device | Address |
+|---|---|
+| HIH-9120-021-001 | 0x27 |
+| DPS310 | 0x77 |
+| ADXL345 | 0x53 |
 
-No address conflicts on the shared I2C bus.
+No address conflicts.
 
 ---
 
 ## 5. Bill of Materials
 
-| # | Component | Part | Supplier | Unit Price | Qty | Total | Weight |
+| # | Part | Description | Supplier | Price | Qty | Total | Weight |
 |---|---|---|---|---|---|---|---|
-| 1 | Microcontroller | Arduino Uno R3 | Arduino | $28.00 | 1 | $28.00 | 25 g |
-| 2 | Humidity + Pressure + Temp | BME280 Breakout | Adafruit #2652 | $14.95 | 1 | $14.95 | 2 g |
-| 3 | 3-Axis Accelerometer | ADXL345 Breakout | Adafruit #1231 | $9.95 | 1 | $9.95 | 2 g |
-| 4 | External Temperature | DS18B20 waterproof probe | Adafruit #381 | $4.95 | 1 | $4.95 | 8 g |
-| 5 | Data Storage | MicroSD SPI module | Amazon | $5.99 | 1 | $5.99 | 4 g |
-| 6 | MicroSD Card | 8 GB Class 10 | Amazon | $6.99 | 1 | $6.99 | 1 g |
-| 7 | LED indicators | 5mm LEDs (×6, assorted) | SparkFun | $0.50 | 6 | $3.00 | 1 g |
-| 8 | Current-limiting resistors | 330Ω 1/4W (×6) | SparkFun | $0.05 | 6 | $0.30 | <1 g |
-| 9 | Pull-up resistor | 4.7kΩ 1/4W (DS18B20) | SparkFun | $0.05 | 1 | $0.05 | <1 g |
-| 10 | Battery | 9V Alkaline (Energizer) | Local | $4.00 | 1 | $4.00 | 45 g |
-| 11 | Power switch | SPST rocker switch | Local | $1.50 | 1 | $1.50 | 5 g |
-| 12 | Barrel connector | 2.1mm barrel jack | Amazon | $1.00 | 1 | $1.00 | 3 g |
-| 13 | Custom PCB | 2-layer shield, ~60×55mm | JLCPCB | $10.00 | 1 | $10.00 | 12 g |
-| 14 | Headers + wiring | 2.54mm pin headers | Amazon | $2.00 | — | $2.00 | 3 g |
-| | | | | | **Total** | **$92.68** | **~111 g** |
+| 1 | Arduino Uno R3 | Main controller | Arduino | $28.00 | 1 | $28.00 | 25g |
+| 2 | HIH-9120-021-001 | Humidity + temp | Digi-Key | $12.00 | 1 | $12.00 | 2g |
+| 3 | DPS310 | Pressure | Adafruit #4494 | $6.95 | 1 | $6.95 | 2g |
+| 4 | ADXL345 | Accelerometer | Adafruit #1231 | $9.95 | 1 | $9.95 | 2g |
+| 5 | DS18B20 | External temp | Adafruit #381 | $4.95 | 1 | $4.95 | 8g |
+| 6 | OpenLog DEV-13712 | Data logger | SparkFun | $24.95 | 1 | $24.95 | 10g |
+| 7 | 5mm LEDs | Status indicators | SparkFun | $0.50 | 4 | $2.00 | 1g |
+| 8 | 330Ω resistors | LED current limiting | SparkFun | $0.05 | 4 | $0.20 | <1g |
+| 9 | 4.7kΩ resistors | I2C + 1-Wire pull-ups | SparkFun | $0.05 | 3 | $0.15 | <1g |
+| 10 | 9V battery | Power | Local | $4.00 | 2 | $8.00 | 90g |
+| 11 | Rocker switch | Power switch | Local | $1.50 | 1 | $1.50 | 5g |
+| 12 | Barrel jack | Power connector | Amazon | $1.00 | 1 | $1.00 | 3g |
+| 13 | Custom PCB | 2-layer shield | JLCPCB | $10.00 | 1 | $10.00 | 12g |
+| 14 | Pin headers | Wiring | Amazon | $2.00 | — | $2.00 | 3g |
+| | | | | | **Total** | **$111.65** | **~163g** |
 
-### Budget Summary
+### Budget
 
 | | Amount |
 |---|---|
-| Original kit cost | $147.00 |
-| This design | $92.68 |
-| **Savings** | **$54.32 (37%)** |
-| Budget remaining | $54.32 |
+| Original kit | $147.00 |
+| My design | $111.65 |
+| Savings | $35.35 |
 
-### Weight Summary
+### Weight
 
 | | Weight |
 |---|---|
-| Maximum allowed | 200 g |
-| This design (electronics) | ~111 g |
-| **Margin remaining** | **~89 g** |
-
-> The ~89 g margin covers the foam structure, insulation, aluminum tape, and flight hardware from the Structure Kit.
+| Limit | 200g |
+| My design | ~163g |
+| Margin left | ~37g |
 
 ---
 
-## 6. Power Consumption Analysis
+## 6. Power Analysis
 
-### 6.1 Assumptions
-- System powered by 1× 9V alkaline battery through Arduino's onboard LDO regulator (~85% efficient)
-- All 6 LEDs on simultaneously through 330Ω at 5V → I = (5V − 2V) / 330Ω ≈ 9 mA each
-- MicroSD draw measured during active write cycle
+### Current Draw
 
-### 6.2 Power Table
-
-| Component | Mode | Current | Voltage | Power |
-|---|---|---|---|---|
-| Arduino Uno (ATmega328P) | Active | ~46 mA | 5V | 0.230 W |
-| BME280 | Forced mode 1Hz | ~0.5 mA | 3.3V | 0.002 W |
-| ADXL345 | Measurement mode | ~0.14 mA | 3.3V | 0.001 W |
-| DS18B20 | Converting | ~1.5 mA | 3.3V | 0.005 W |
-| MicroSD module | Write cycle | ~30 mA | 3.3V | 0.099 W |
-| 6× LEDs (330Ω, 5V) | All on | ~54 mA | 5V | 0.270 W |
-| **TOTAL (active)** | | **~132 mA** | | **~0.607 W** |
-| **TOTAL (logging, LEDs off)** | | **~78 mA** | | **~0.337 W** |
-
-### 6.3 Battery Life Estimate
-
-Accounting for LDO regulator efficiency (~85%), the 9V battery supplies approximately **92 mA** at the input when the system draws 78 mA at 5V during normal logging.
-
-$$\text{Runtime} = \frac{550 \text{ mAh}}{92 \text{ mA}} \approx \textbf{5.9 hours}$$
-
-A typical DemoSat flight lasts **3–4 hours** — this design has sufficient margin on a single battery.
-
-### 6.4 Comparison: Phase 1 vs Phase 2
-
-| Metric | Phase 1 (original) | Phase 2 (this design) | Change |
+| Part | Current | Voltage | Power |
 |---|---|---|---|
-| Active current (5V rail) | ~76 mA | ~78 mA | +3% (6 LEDs vs 4) |
-| Battery count | 2× 9V | 1× 9V | **−50% batteries** |
-| Battery weight | 90 g | 45 g | **−45 g saved** |
-| Estimated runtime | ~6.1 hrs (×2 batteries) | ~5.9 hrs (×1 battery) | Comparable |
-| Unavailable parts | 4 | 0 | **✅ Fully sourceable** |
+| Arduino Uno | ~46 mA | 5V | 0.230W |
+| HIH-9120 | ~0.57 mA | 3.3V | 0.002W |
+| DPS310 | ~0.002 mA | 3.3V | 0.000W |
+| ADXL345 | ~0.14 mA | 3.3V | 0.001W |
+| DS18B20 | ~1.5 mA | 3.3V | 0.005W |
+| OpenLog | ~20 mA | 5V | 0.100W |
+| 4x LEDs | ~36 mA | 5V | 0.180W |
+| **Total (LEDs on)** | **~105 mA** | | **~0.518W** |
+| **Total (LEDs off)** | **~69 mA** | | **~0.338W** |
 
-> The slight current increase is because I count all 6 LEDs (matching the original kit) vs the 4 LEDs assumed in Phase 1. The major win is cutting from two batteries to one — saving 45 g while maintaining flight-duration coverage.
+### Battery Life
+
+With 2x 9V batteries (1100 mAh total):
+
+Runtime = 1100 mAh / 81 mA ≈ **13.6 hours**
+
+A DemoSat flight is 3–4 hours, so this is plenty.
 
 ---
 
-## 7. Custom PCB Design
+## 7. PCB Design
 
-### 7.1 Overview
+The PCB is an Arduino Uno shield that stacks directly on top of the Arduino.
 
-The custom PCB replaces the original Shield Kit. It is designed as an Arduino Uno shield — stacking directly on top of the Arduino via standard headers — keeping the assembly compact and eliminating loose wiring.
-
-### 7.2 PCB Specifications
-
-| Parameter | Value |
+| Spec | Value |
 |---|---|
-| Form factor | Arduino Uno shield (68.6 × 53.3 mm) |
-| Layers | 2 (top + bottom copper) |
-| PCB thickness | 1.6 mm |
+| Size | 69.5 × 54.0 mm |
+| Layers | 2 |
+| Thickness | 1.6 mm |
 | Min trace width | 0.2 mm |
-| Surface finish | HASL lead-free |
-| Recommended manufacturer | JLCPCB |
-| Estimated cost | ~$10 for 5 boards including shipping |
+| Finish | HASL lead-free |
+| Manufacturer | JLCPCB / OSHPark |
+| Cost | ~$10 for 5 boards |
 
-### 7.3 Component Placement
-```
-┌──────────────────────────────────────────┐
-│  [Barrel Jack]    [Rocker Switch]        │
-│                                          │
-│  ┌──────────┐    ┌──────────┐           │
-│  │  BME280  │    │  ADXL345 │           │
-│  │  (I2C)   │    │  (I2C)   │           │
-│  └──────────┘    └──────────┘           │
-│                                          │
-│  [DS18B20 connector — 3 pin]            │
-│                                          │
-│  [MicroSD module header — 6 pin SPI]    │
-│                                          │
-│  [LED ×6]  [R ×6 330Ω]  [R 4.7kΩ]     │
-│                                          │
-│  Arduino Uno shield headers (below PCB) │
-└──────────────────────────────────────────┘
-```
-
-### 7.4 Key Design Rules
-
-- **Decoupling caps:** 100nF ceramic cap on each sensor VCC pin (BME280, ADXL345, MicroSD), placed as close to the pin as possible
-- **I2C pull-ups:** One pair of 4.7kΩ resistors on SDA and SCL to 3.3V — only one set for the whole bus
-- **DS18B20 pull-up:** 4.7kΩ between data line and 3.3V
-- **Ground plane:** Solid copper pour on bottom layer to reduce noise
-- **SPI routing:** Keep D10–D13 traces short; CS line (D10) must be driven low before every transaction
-
-### 7.5 Recommended EDA Tool
-
-| Tool | Cost | Notes |
-|---|---|---|
-| **EasyEDA** | Free | Browser-based, integrates directly with JLCPCB for ordering |
-| **KiCad** | Free | Industry standard, good for learning transferable skills |
+Key design choices:
+- 100nF decoupling cap on each sensor VCC pin
+- 4.7kΩ pull-up resistors on SDA and SCL
+- 4.7kΩ pull-up on DS18B20 data line
+- Ground plane on bottom copper layer
 
 ---
 
-## 8. Functionality Verification
+## 8. Does It Work?
 
-| Required Function | Original Part | New Implementation | Status |
+| Function | Original Part | My Part | Works? |
 |---|---|---|---|
-| Internal temperature | HIH6130 | BME280 | ✅ |
-| Humidity | HIH6130 | BME280 | ✅ |
-| Barometric pressure + altitude | MPL3115A2 | BME280 | ✅ |
-| External temperature | DS18B20 | DS18B20 (unchanged) | ✅ |
-| 3-axis acceleration | MMA8452Q | ADXL345 | ✅ |
-| Data storage | OpenLog DEV-13712 | MicroSD SPI module | ✅ |
-| LED indicators | 6× LEDs | 6× LEDs (unchanged) | ✅ |
-| Battery-powered operation | 2× 9V | 1× 9V | ✅ |
+| Humidity | HIH6130 | HIH-9120-021-001 | ✅ |
+| Internal temp | HIH6130 | HIH-9120-021-001 | ✅ |
+| Pressure + altitude | MPL3115A2 | DPS310 | ✅ |
+| External temp | DS18B20 | DS18B20 | ✅ |
+| Acceleration | MMA8452Q | ADXL345 | ✅ |
+| Data logging | OpenLog | OpenLog (re-sourced) | ✅ |
+| LEDs | 4x LEDs | 4x LEDs | ✅ |
+| Battery power | 2x 9V | 2x 9V | ✅ |
 
 ---
 
-## 9. Arduino Firmware
 
-### Required Libraries (install via Arduino Library Manager)
-- `Adafruit BME280 Library`
-- `Adafruit Unified Sensor`
-- `Adafruit ADXL345`
-- `OneWire`
-- `DallasTemperature`
-- `SD` (built-in)
 
-### sensor_logger.ino
-```cpp
-/*
- * DemoSat Payload — Sensor Logger
- * ENCE 3231 Microprocessors 1 | Winter Quarter 2026
- * University of Denver | Ali Behbehani
- *
- * Sensors:
- *   BME280   (I2C 0x76) — humidity, pressure, internal temp
- *   ADXL345  (I2C 0x53) — 3-axis acceleration
- *   DS18B20  (1-Wire D6) — external temperature
- *   MicroSD  (SPI D10)  — CSV data logging
- *   6x LEDs  (D2–D7)    — status indicators
- */
+## 9. Summary
 
-#include <Wire.h>
-#include <SPI.h>
-#include <SD.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
-#include <Adafruit_ADXL345_U.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
-
-#define PIN_ONE_WIRE  6
-#define PIN_SD_CS     10
-#define PIN_LED_1     2
-#define PIN_LED_2     3
-#define PIN_LED_3     4
-#define PIN_LED_4     5
-#define PIN_LED_5     7
-#define PIN_LED_6     8
-
-Adafruit_BME280 bme;
-Adafruit_ADXL345_Unified adxl = Adafruit_ADXL345_Unified(12345);
-OneWire oneWire(PIN_ONE_WIRE);
-DallasTemperature ds18b20(&oneWire);
-
-File logFile;
-unsigned long lastLog = 0;
-const unsigned long LOG_INTERVAL = 1000;
-
-void errorHalt(const char* msg) {
-  Serial.print("ERROR: "); Serial.println(msg);
-  while (true) {
-    digitalWrite(PIN_LED_1, HIGH); delay(200);
-    digitalWrite(PIN_LED_1, LOW);  delay(200);
-  }
-}
-
-void setup() {
-  Serial.begin(9600);
-  for (int p = 2; p <= 8; p++) pinMode(p, OUTPUT);
-
-  if (!bme.begin(0x76))       errorHalt("BME280 not found");
-  if (!adxl.begin())          errorHalt("ADXL345 not found");
-  adxl.setRange(ADXL345_RANGE_2_G);
-  ds18b20.begin();
-  if (!SD.begin(PIN_SD_CS))   errorHalt("SD init failed");
-
-  logFile = SD.open("log.csv", FILE_WRITE);
-  if (!logFile) errorHalt("Cannot open log.csv");
-  logFile.println("time_ms,ext_temp_C,int_temp_C,humidity_pct,pressure_hPa,ax_g,ay_g,az_g");
-  logFile.close();
-
-  // All LEDs on = system ready
-  for (int p = 2; p <= 8; p++) digitalWrite(p, HIGH);
-  delay(1000);
-  for (int p = 2; p <= 8; p++) digitalWrite(p, LOW);
-  digitalWrite(PIN_LED_2, HIGH); // green = logging
-  Serial.println("Ready. Logging started.");
-}
-
-void loop() {
-  if (millis() - lastLog < LOG_INTERVAL) return;
-  lastLog = millis();
-
-  ds18b20.requestTemperatures();
-  float extTemp  = ds18b20.getTempCByIndex(0);
-  float intTemp  = bme.readTemperature();
-  float humidity = bme.readHumidity();
-  float pressure = bme.readPressure() / 100.0F;
-
-  sensors_event_t event;
-  adxl.getEvent(&event);
-  float ax = event.acceleration.x / 9.81;
-  float ay = event.acceleration.y / 9.81;
-  float az = event.acceleration.z / 9.81;
-
-  Serial.print("ExtT="); Serial.print(extTemp);
-  Serial.print(" IntT="); Serial.print(intTemp);
-  Serial.print(" Hum="); Serial.print(humidity);
-  Serial.print(" Pres="); Serial.print(pressure);
-  Serial.print(" Ax="); Serial.print(ax);
-  Serial.print(" Ay="); Serial.print(ay);
-  Serial.print(" Az="); Serial.println(az);
-
-  logFile = SD.open("log.csv", FILE_WRITE);
-  if (logFile) {
-    logFile.print(millis());   logFile.print(",");
-    logFile.print(extTemp);    logFile.print(",");
-    logFile.print(intTemp);    logFile.print(",");
-    logFile.print(humidity);   logFile.print(",");
-    logFile.print(pressure);   logFile.print(",");
-    logFile.print(ax);         logFile.print(",");
-    logFile.print(ay);         logFile.print(",");
-    logFile.println(az);
-    logFile.close();
-    digitalWrite(PIN_LED_2, LOW); delay(50);
-    digitalWrite(PIN_LED_2, HIGH);
-  } else {
-    digitalWrite(PIN_LED_1, HIGH); delay(100);
-    digitalWrite(PIN_LED_1, LOW);
-  }
-}
-```
-
----
-
-## 10. Phase 2 Summary
-
-| Parameter | Result |
+| | Result |
 |---|---|
-| Total cost | $92.68 (saves $54.32 vs original) |
-| Electronics weight | ~111 g (89 g margin remaining) |
-| Active power draw | ~132 mA (all LEDs on) |
-| Logging power draw | ~78 mA (LEDs off) |
-| Estimated battery runtime | ~5.9 hours (1× 9V) |
-| Unavailable parts | **0 — fully sourceable** |
-| Budget status | ✅ Under $147 |
-| Weight status | ✅ Under 200 g |
+| Total cost | $111.65 |
+| Weight | ~163g |
+| Max current (LEDs on) | ~105mA |
+| Logging current | ~69mA |
+| Battery life | ~13.6 hours |
+| Discontinued parts | 0 |
+| Under budget | ✅ |
+| Under weight limit | ✅ |
 
----
-
-*Builds on [Phase 1 System Evaluation](../Phase_1/README.md)*

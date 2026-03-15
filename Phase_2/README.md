@@ -90,48 +90,7 @@ I replaced each discontinued part with something that works the same way and is 
 ## 4. How the System Works
 
 ### Block Diagram
-```
-                    ┌──────────────┐
-                    │  9V Battery  │
-                    │     x2       │
-                    └──────┬───────┘
-                           │ VIN (through switch)
-                    ┌──────▼───────┐
-                    │  Arduino Uno │
-                    │              │
-                    │  I2C: A4/A5  │
-                    │  1-Wire: D6  │
-                    │  UART: D1    │
-                    │  GPIO: D2-D5 │
-                    └──┬────────┬──┘
-                       │        │
-              I2C Bus  │        │  UART
-                       │        │
-         ┌─────────────┤    ┌───▼──────┐
-         │             │    │ OpenLog  │
-   ┌─────▼───┐  ┌──────▼─┐  │ DEV-13712│
-   │HIH-9120 │  │ DPS310 │  └──────────┘
-   │0x27     │  │ 0x77   │
-   └─────────┘  └────────┘
-   ┌─────────┐
-   │ ADXL345 │
-   │ 0x53    │
-   └─────────┘
 
-      1-Wire (D6)
-           │
-    ┌──────▼──────┐
-    │   DS18B20   │
-    │  Ext. Temp  │
-    └─────────────┘
-
-      GPIO (D2-D5)
-           │
-    ┌──────▼──────┐
-    │  4x LEDs    │
-    │  330Ω each  │
-    └─────────────┘
-```
 
 ### Pin Map
 
